@@ -3,6 +3,8 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Expenses from './pages/Expenses';
 
 function App() {
   return (
@@ -15,11 +17,19 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <h1 className="text-white p-8">Dashboard - Coming Soon</h1>
+                <Dashboard />
               </ProtectedRoute>
             }
           />
           <Route path="/" element={<Login />} />
+          <Route
+  path="/expenses"
+  element={
+    <ProtectedRoute>
+      <Expenses />
+    </ProtectedRoute>
+  }
+/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
