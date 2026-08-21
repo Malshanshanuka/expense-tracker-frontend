@@ -22,3 +22,18 @@ export const updateExpense = async (id, data) => {
 export const deleteExpense = async (id) => {
   await api.delete(`/expenses/${id}`);
 };
+
+export const downloadPdfReport = async (year, month) => {
+  const response = await api.get(`/reports/monthly/pdf?year=${year}&month=${month}`, {
+    responseType: 'blob',
+  });
+  const blob = new Blob([response.data], { type: 'application/pdf' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `Expense_Report_${month}_${year}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};

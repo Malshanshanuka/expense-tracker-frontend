@@ -1,16 +1,65 @@
-# React + Vite
+# ExpenseFlow — Modern Expense Tracker Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A React single-page application for personal expense tracking and financial analytics, built to interface with the [Spring Boot Expense Tracker REST API](https://github.com/Malshanshanuka/expense-tracker-api).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Key Features
 
-## React Compiler
+- **JWT Authentication Flow**: Login & Registration screens with instant feedback and toast notifications.
+- **Interactive Dashboard**:
+  - Real-time stat cards (Monthly Total, Transaction Count, Average Expense, Top Sector).
+  - Interactive Donut & Bar charts powered by Recharts.
+  - Recent transactions overview with category badges.
+- **Advanced Expense Management**:
+  - Live search filtering by description.
+  - Category selector filter.
+  - Multi-column sorting (Date, Amount) with ascending/descending toggles.
+  - Client-side pagination.
+  - Custom glassmorphism modal for delete confirmation.
+- **Financial Reports & PDF Export**:
+  - Monthly category comparison bar and pie charts.
+  - Summary metrics (Daily average, highest sector).
+  - One-click PDF statement downloading via JWT authentication token.
+- **Custom Toast Notification System**: Success, Error, and Info alert toasts with auto-dismissal.
+- **Responsive Layout**: Sidebar with mobile drawer, user profile badge, and smooth dark theme design.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Framework**: React 19 + Vite 8
+- **Styling**: Tailwind CSS v4 + Vanilla CSS animations & glassmorphism
+- **Routing**: React Router DOM v7
+- **Charts**: Recharts
+- **HTTP Client**: Axios with JWT interceptors
+- **Font**: Inter (Google Fonts)
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ and `npm`
+- Running backend instance of [Expense Tracker REST API](https://github.com/Malshanshanuka/expense-tracker-api) on `http://localhost:8080`
+
+### Installation
+
+```bash
+git clone https://github.com/Malshanshanuka/expense-tracker-frontend.git
+cd expense-tracker-frontend
+npm install
+```
+
+### Development Server
+
+```bash
+npm run dev
+```
+
+### Build for Production
+
+```bash
+npm run build
+```
