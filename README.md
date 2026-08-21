@@ -1,65 +1,66 @@
-# ExpenseFlow — Modern Expense Tracker Frontend
+# Expense Tracker Frontend
 
-A React single-page application for personal expense tracking and financial analytics, built to interface with the [Spring Boot Expense Tracker REST API](https://github.com/Malshanshanuka/expense-tracker-api).
+React web application for Expense Tracker personal finance management platform.
 
----
+Backend Repository: https://github.com/malshanshanuka/expense-tracker-api
 
-## Key Features
+## Features
 
-- **JWT Authentication Flow**: Login & Registration screens with instant feedback and toast notifications.
-- **Interactive Dashboard**:
-  - Real-time stat cards (Monthly Total, Transaction Count, Average Expense, Top Sector).
-  - Interactive Donut & Bar charts powered by Recharts.
-  - Recent transactions overview with category badges.
-- **Advanced Expense Management**:
-  - Live search filtering by description.
-  - Category selector filter.
-  - Multi-column sorting (Date, Amount) with ascending/descending toggles.
-  - Client-side pagination.
-  - Custom glassmorphism modal for delete confirmation.
-- **Financial Reports & PDF Export**:
-  - Monthly category comparison bar and pie charts.
-  - Summary metrics (Daily average, highest sector).
-  - One-click PDF statement downloading via JWT authentication token.
-- **Custom Toast Notification System**: Success, Error, and Info alert toasts with auto-dismissal.
-- **Responsive Layout**: Sidebar with mobile drawer, user profile badge, and smooth dark theme design.
+- Interactive dashboard with category spending pie chart using Recharts
+- Monthly budget tracker with progress bar and spending alert warnings
+- Full CRUD operations for expenses with category filter and search
+- CSV data export for expenses and monthly category reports
+- Monthly PDF report download with JWT bearer authentication
+- Toast notifications for application actions
+- Responsive design styled with Tailwind CSS
 
----
+## Technology Stack
 
-## Tech Stack
+- Framework: React 19
+- Build Tool: Vite
+- Styling: Tailwind CSS
+- Charts: Recharts
+- HTTP Client: Axios
+- Router: React Router DOM v7
 
-- **Framework**: React 19 + Vite 8
-- **Styling**: Tailwind CSS v4 + Vanilla CSS animations & glassmorphism
-- **Routing**: React Router DOM v7
-- **Charts**: Recharts
-- **HTTP Client**: Axios with JWT interceptors
-- **Font**: Inter (Google Fonts)
+## Project Structure
 
----
+```
+src/
+  api/          # Axios instance and API calls
+  components/   # Reusable components
+  context/      # Auth and Toast context providers
+  pages/        # Dashboard, Expenses, Reports, Login, Register views
+  App.jsx       # Routing setup
+  main.jsx      # Entry point
+```
 
-## Getting Started
+## Local Setup Instructions
 
 ### Prerequisites
-
-- Node.js 18+ and `npm`
-- Running backend instance of [Expense Tracker REST API](https://github.com/Malshanshanuka/expense-tracker-api) on `http://localhost:8080`
+- Node.js v18+
+- npm
 
 ### Installation
 
+1. Clone the repository:
 ```bash
-git clone https://github.com/Malshanshanuka/expense-tracker-frontend.git
+git clone https://github.com/malshanshanuka/expense-tracker-frontend.git
 cd expense-tracker-frontend
+```
+
+2. Install dependencies:
+```bash
 npm install
 ```
 
-### Development Server
-
+3. Run development server:
 ```bash
 npm run dev
 ```
 
-### Build for Production
+The application will run at http://localhost:5173.
 
-```bash
-npm run build
-```
+## Author
+
+Malshan Shanuka
