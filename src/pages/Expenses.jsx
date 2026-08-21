@@ -115,6 +115,31 @@ function Expenses() {
     return filteredExpenses.slice(start, start + itemsPerPage);
   }, [filteredExpenses, currentPage]);
 
+  const handleExportCsv = () => {
+    if (!filteredExpenses.length) return;
+
+    const headers = ['ID', 'Description', 'Category', 'Date', 'Amount (Rs)'];
+    const rows = filteredExpenses.map((exp) => [
+      exp.id,
+      `"${(exp.description || '').replace(/"/g, '""')}"`,
+      `"${(exp.categoryName || '').replace(/"/g, '""')}"`,
+      exp.expenseDate,
+      exp.amount,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Expenses_Export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    success('Expenses exported to CSV successfully');
+  };
+
   return (
     <div className="flex bg-slate-950 min-h-screen">
       <Sidebar />
@@ -125,15 +150,27 @@ function Expenses() {
             <p className="text-slate-400 text-sm mt-1">Filter, sort and edit all recorded transactions</p>
           </div>
           {!showForm && (
-            <button
-              onClick={handleAddClick}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition duration-200"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Expense
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleExportCsv}
+                disabled={!filteredExpenses.length}
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm border border-slate-700 transition duration-200 disabled:opacity-40"
+              >
+                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export CSV
+              </button>
+              <button
+                onClick={handleAddClick}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition duration-200"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Expense
+              </button>
+            </div>
           )}
         </div>
 

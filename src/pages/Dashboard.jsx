@@ -12,6 +12,13 @@ function Dashboard() {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [monthlyBudget, setMonthlyBudget] = useState(() => {
+    const saved = localStorage.getItem('monthly_budget');
+    return saved ? parseFloat(saved) : 50000;
+  });
+  const [isEditingBudget, setIsEditingBudget] = useState(false);
+  const [tempBudget, setTempBudget] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,13 +52,44 @@ function Dashboard() {
     : [];
 
   const topCategory = sortedCategories.length > 0 ? sortedCategories[0].categoryName : 'N/A';
-
   const recentExpenses = expenses.slice(-5).reverse();
 
   const pieChartData = sortedCategories.map((cat) => ({
     name: cat.categoryName,
     value: cat.totalAmount,
   }));
+
+  const budgetPercentage = Math.min((totalSpent / monthlyBudget) * 100, 100);
+  const isBudgetWarning = totalSpent >= monthlyBudget * 0.85;
+  const isOverBudget = totalSpent > monthlyBudget;
+
+  const budgetStatusText = isOverBudget
+    ? 'Budget Exceeded'
+    : isBudgetWarning
+    ? 'Nearing Limit'
+    : 'On Track';
+
+  const budgetStatusColor = isOverBudget
+    ? 'text-rose-400'
+    : isBudgetWarning
+    ? 'text-amber-400'
+    : 'text-emerald-400';
+
+  const progressBgColor = isOverBudget
+    ? 'bg-rose-500'
+    : isBudgetWarning
+    ? 'bg-amber-500'
+    : 'bg-emerald-500';
+
+  const handleSaveBudget = (e) => {
+    e.preventDefault();
+    const val = parseFloat(tempBudget);
+    if (!isNaN(val) && val > 0) {
+      setMonthlyBudget(val);
+      localStorage.setItem('monthly_budget', val.toString());
+    }
+    setIsEditingBudget(false);
+  };
 
   return (
     <div className="flex bg-slate-950 min-h-screen">
@@ -72,6 +110,41 @@ function Dashboard() {
             Add New Expense
           </Link>
         </div>
+
+        {isBudgetWarning && !loading && (
+          <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition animate-fade-in ${
+            isOverBudget
+              ? 'bg-rose-500/10 border-rose-500/20 text-rose-300'
+              : 'bg-amber-500/10 border-amber-500/20 text-amber-300'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-xl ${isOverBudget ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-bold">
+                  {isOverBudget ? 'Monthly Budget Exceeded!' : 'Monthly Budget Alert'}
+                </p>
+                <p className="text-xs opacity-80 mt-0.5">
+                  {isOverBudget
+                    ? `You have spent Rs. ${(totalSpent - monthlyBudget).toFixed(2)} over your monthly limit.`
+                    : `You have utilized ${budgetPercentage.toFixed(0)}% of your Rs. ${monthlyBudget.toLocaleString()} budget.`}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setTempBudget(monthlyBudget.toString());
+                setIsEditingBudget(true);
+              }}
+              className="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold shrink-0 transition"
+            >
+              Adjust Budget
+            </button>
+          </div>
+        )}
 
         {loading ? (
           <div className="space-y-8">
@@ -203,17 +276,74 @@ function Dashboard() {
 
               <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-md flex flex-col justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-4">Quick Insights</h3>
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 space-y-1">
-                      <span className="text-xs text-slate-400">Total Categories Used</span>
-                      <p className="text-xl font-bold text-white">{sortedCategories.length}</p>
-                    </div>
-                    <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 space-y-1">
-                      <span className="text-xs text-slate-400">Monthly Target Status</span>
-                      <p className="text-sm font-semibold text-emerald-400">On Track</p>
-                    </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-white">Monthly Budget</h3>
+                    <button
+                      onClick={() => {
+                        setTempBudget(monthlyBudget.toString());
+                        setIsEditingBudget(!isEditingBudget);
+                      }}
+                      className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition"
+                    >
+                      {isEditingBudget ? 'Cancel' : 'Edit Limit'}
+                    </button>
                   </div>
+
+                  {isEditingBudget ? (
+                    <form onSubmit={handleSaveBudget} className="space-y-3 mb-4">
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-slate-500 text-xs font-medium">Rs.</span>
+                        <input
+                          type="number"
+                          step="500"
+                          min="1000"
+                          value={tempBudget}
+                          onChange={(e) => setTempBudget(e.target.value)}
+                          className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs outline-none focus:border-indigo-500"
+                          placeholder="Set budget amount"
+                          required
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition"
+                      >
+                        Save Budget
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 space-y-2.5">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-slate-400">Budget Limit</span>
+                          <span className="text-white font-bold">
+                            Rs. {monthlyBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-slate-400">Spent So Far</span>
+                          <span className="text-slate-200 font-semibold">
+                            Rs. {totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-700/60 rounded-full h-2.5 overflow-hidden mt-2">
+                          <div
+                            className={`h-full ${progressBgColor} transition-all duration-500 rounded-full`}
+                            style={{ width: `${budgetPercentage}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between items-center text-[11px] pt-1">
+                          <span className="text-slate-400">{budgetPercentage.toFixed(1)}% used</span>
+                          <span className={`font-bold ${budgetStatusColor}`}>{budgetStatusText}</span>
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 space-y-1">
+                        <span className="text-xs text-slate-400">Total Categories Used</span>
+                        <p className="text-xl font-bold text-white">{sortedCategories.length}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <Link

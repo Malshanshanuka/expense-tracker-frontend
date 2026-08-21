@@ -54,6 +54,29 @@ function Reports() {
 
   const highestCat = sortedCategories.length > 0 ? sortedCategories[0] : null;
 
+  const handleExportCsv = () => {
+    if (!summary?.categoryBreakdown?.length) return;
+
+    const headers = ['Category', 'Amount Spent (Rs)'];
+    const rows = summary.categoryBreakdown.map((cat) => [
+      `"${(cat.categoryName || '').replace(/"/g, '""')}"`,
+      cat.totalAmount,
+    ]);
+
+    rows.push(['Total Spent', summary.totalSpent]);
+
+    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Monthly_Summary_${month}_${year}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex bg-slate-950 min-h-screen">
       <Sidebar />
@@ -86,6 +109,17 @@ function Reports() {
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
+
+            <button
+              onClick={handleExportCsv}
+              disabled={!summary?.categoryBreakdown?.length}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm border border-slate-700 transition duration-200 disabled:opacity-40"
+            >
+              <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export CSV
+            </button>
 
             <button
               onClick={handleDownloadPdf}
